@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
+	"os"
 	"fmt"
+	"github.com/spf13/cobra"
 	"gitlab.com/yugarinn/gei/installer"
 )
 
@@ -21,12 +22,17 @@ func init() {
 }
 
 func search(args []string) {
+	if (len(args) < 1) {
+		fmt.Println("A search term is required")
+		os.Exit(0)
+	}
+
 	searchResults := installer.FetchSearch(args[0])
 
 	for _, result := range searchResults {
-		fmt.Println(result.Pk)
-		fmt.Println(result.Name)
-		fmt.Println(result.Description)
-		fmt.Println("---")
+		fmt.Println("Name: ", result.Name)
+		fmt.Println("Description: ", result.Description)
+		fmt.Println("ID: ", result.Pk)
+		fmt.Println()
 	}
 }
