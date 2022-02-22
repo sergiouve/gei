@@ -31,6 +31,5 @@ func FetchSearch(searchTerm string) []PrintableSearchResult {
 		printableResults = append(printableResults, printableSearchResult)
 	})
 
-
 	return printableResults
 }

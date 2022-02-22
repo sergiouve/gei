@@ -10,8 +10,6 @@ import (
 var searchCmd = &cobra.Command{
 	Use:   "search",
 	Short: "Search available extensions in https://extensions.gnome.org",
-	Long: ` A longer description that spans multiple lines and likely contains examples
-			and usage of using your command. For example:`,
 	Run: func(cmd *cobra.Command, args []string) {
 		search(args)
 	},
