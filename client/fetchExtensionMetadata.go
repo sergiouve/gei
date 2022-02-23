@@ -5,12 +5,13 @@ import (
 	"io/ioutil"
 )
 
-func FetchSearch(extensionName string) string {
+func FetchExtensionMetadata(extensionId string) string {
 	client := &http.Client{}
-	request, _ := http.NewRequest("GET", "https://extensions.gnome.org/extension-query", nil)
+
+	request, _ := http.NewRequest("GET", "https://extensions.gnome.org/extension-info", nil)
 
 	query := request.URL.Query()
-	query.Add("search", extensionName)
+	query.Add("pk", extensionId)
 
 	request.URL.RawQuery = query.Encode()
 
