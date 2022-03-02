@@ -7,8 +7,8 @@ import (
 
 type PrintableSearchResult struct {
 	Name string
-	Description string
 	Pk string
+	Description string
 }
 
 func FetchSearch(searchTerm string) []PrintableSearchResult {
@@ -19,13 +19,13 @@ func FetchSearch(searchTerm string) []PrintableSearchResult {
 
 	jsonparser.ArrayEach(extensions, func(searchResult []byte, dataType jsonparser.ValueType, offset int, err error) {
 		searchName, _, _, _ := jsonparser.Get(searchResult, "name")
-		searchDescription, _, _, _ := jsonparser.Get(searchResult, "description")
 		searchPk, _, _, _ := jsonparser.Get(searchResult, "pk")
+		searchDescription, _, _, _ := jsonparser.Get(searchResult, "description")
 
 		printableSearchResult := PrintableSearchResult{
 			Name: string(searchName),
-			Description: string(searchDescription),
 			Pk: string(searchPk),
+			Description: string(searchDescription),
 		}
 
 		printableResults = append(printableResults, printableSearchResult)

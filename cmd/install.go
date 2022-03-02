@@ -27,5 +27,5 @@ func install(args []string) {
 
 	installer.InstallExtension(args[0])
 
-	fmt.Println("Extension successfully installed")
+	fmt.Println("Extension successfully installed. Or was it?")
 }

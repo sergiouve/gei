@@ -29,8 +29,8 @@ func search(args []string) {
 
 	for _, result := range searchResults {
 		fmt.Println("Name: ", result.Name)
-		fmt.Println("Description: ", result.Description)
 		fmt.Println("ID: ", result.Pk)
+		fmt.Println("Description: ", result.Description)
 		fmt.Println()
 	}
 }
