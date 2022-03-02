@@ -8,7 +8,7 @@ require (
 	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/spf13/cobra v1.3.0 // indirect
-	golang.org/x/sys v0.0.0-20220223155357-96fed51e1446 // indirect
+	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 	golang.org/x/tools v0.1.9 // indirect
 	golang.org/x/tools/gopls v0.7.5 // indirect
 	honnef.co/go/tools v0.2.2 // indirect
