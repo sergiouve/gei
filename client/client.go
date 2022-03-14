@@ -34,10 +34,17 @@ func fetch(method string, url string, params []QueryParameter) []byte {
 }
 
 func FetchSearch(extensionName string) []byte {
-	params := []QueryParameter{(QueryParameter{name: "search", value: extensionName})}
+	params := []QueryParameter{{name: "search", value: extensionName}}
 	searchResult := fetch("GET", "https://extensions.gnome.org/extension-query", params)
 
 	return searchResult
+}
+
+func FetchExtensionMetadata(extensionId string, systemShellVersion string) []byte {
+	params := []QueryParameter{{name: "pk", value: extensionId}, {name: "shell_version", value: systemShellVersion}}
+	extensionMetadata := fetch("GET", "https://extensions.gnome.org/extension-info/", params)
+
+	return extensionMetadata
 }
 
 func DownloadExtension(extensionId string) {
