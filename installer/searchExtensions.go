@@ -1,35 +1,36 @@
 package installer
 
 import (
-	"github.com/buger/jsonparser"
+	"encoding/json"
 	"gitlab.com/yugarinn/gei/client"
 )
 
-type PrintableSearchResult struct {
-	Name string
-	Pk string
-	Description string
+type FetchSearchResult struct {
+	Extensions []ExtensionSearchResult
 }
 
-func FetchSearch(searchTerm string) []PrintableSearchResult {
-	searchResults := client.FetchSearch(searchTerm)
+type ExtensionSearchResult struct {
+	Uuid string
+	Name string
+	Creator string
+	CreatorUrl string
+	Pk int
+	Description string
+	Link string
+	Icon string
+	ShellVersionMap []ShellVersion
+}
 
-	extensions, _, _, _ := jsonparser.Get([]byte(searchResults), "extensions")
-	printableResults := []PrintableSearchResult{}
+type ShellVersion struct {
+	Pk int
+	Version int
+}
 
-	jsonparser.ArrayEach(extensions, func(searchResult []byte, dataType jsonparser.ValueType, offset int, err error) {
-		searchName, _, _, _ := jsonparser.Get(searchResult, "name")
-		searchPk, _, _, _ := jsonparser.Get(searchResult, "pk")
-		searchDescription, _, _, _ := jsonparser.Get(searchResult, "description")
+func FetchSearch(searchTerm string) FetchSearchResult {
+	searchResponse := client.FetchSearch(searchTerm)
 
-		printableSearchResult := PrintableSearchResult{
-			Name: string(searchName),
-			Pk: string(searchPk),
-			Description: string(searchDescription),
-		}
+	var extensionSearchResult FetchSearchResult
+	json.Unmarshal(searchResponse, &extensionSearchResult)
 
-		printableResults = append(printableResults, printableSearchResult)
-	})
-
-	return printableResults
+	return extensionSearchResult
 }

@@ -13,7 +13,7 @@ type QueryParameter struct {
 	value string
 }
 
-func Fetch(method string, url string, params []QueryParameter) string {
+func fetch(method string, url string, params []QueryParameter) []byte {
 	client := &http.Client{}
 	request, _ := http.NewRequest(method, url, nil)
 
@@ -29,14 +29,13 @@ func Fetch(method string, url string, params []QueryParameter) string {
 
 	response, _ := client.Do(request)
 	payload, _ := ioutil.ReadAll(response.Body)
-	body := string(payload)
 
-	return body
+	return payload
 }
 
-func FetchSearch(extensionName string) string {
+func FetchSearch(extensionName string) []byte {
 	params := []QueryParameter{(QueryParameter{name: "search", value: extensionName})}
-	searchResult := Fetch("GET", "https://extensions.gnome.org/extension-query", params)
+	searchResult := fetch("GET", "https://extensions.gnome.org/extension-query", params)
 
 	return searchResult
 }

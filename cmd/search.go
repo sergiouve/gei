@@ -27,10 +27,7 @@ func search(args []string) {
 
 	searchResults := installer.FetchSearch(args[0])
 
-	for _, result := range searchResults {
-		fmt.Println("Name: ", result.Name)
-		fmt.Println("ID: ", result.Pk)
-		fmt.Println("Description: ", result.Description)
-		fmt.Println()
+	for _, result := range searchResults.Extensions {
+		fmt.Println(fmt.Sprintf("id: %d, name: %s, url: https://extensions.gnome.org%s", result.Pk, result.Name, result.Link))
 	}
 }
