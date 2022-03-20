@@ -1,11 +1,14 @@
 package client
 
 import (
-	"io"
-	"os"
 	"fmt"
-	"net/http"
+	"io"
 	"io/ioutil"
+	"net/http"
+	"os"
+	"path/filepath"
+
+	"gitlab.com/yugarinn/gei/idos"
 )
 
 type QueryParameter struct {
@@ -47,19 +50,13 @@ func FetchExtensionMetadata(extensionId string, systemShellVersion string) []byt
 	return extensionMetadata
 }
 
-func DownloadExtension(extensionId string) {
-	// TODO: first call to https://extensions.gnome.org/extension-info/?pk=79&shell_version=40 and then extract the metadata to call
-	// download-extension/hide-dash@zacbarton.com.shell-extension.zip?version_tag=1993
-	extensionMetadata := ""
-	fmt.Println(extensionMetadata)
-
+func DownloadExtension(extensionMetadata idos.ExtensionMetadata) {
 	client := &http.Client{}
+	homeDir, _ := os.UserHomeDir()
+	fileName := fmt.Sprintf("%s.zip", extensionMetadata.Uuid)
 
-	request, _ := http.NewRequest("GET", "https://extensions.gnome.org/download-extension/pomodoro@arun.codito.in.shell-extension.zip", nil)
-	query := request.URL.Query()
-
-	query.Add("version_tag", "41.0")
-	request.URL.RawQuery = query.Encode()
+	downloadUrl := fmt.Sprintf("https://extensions.gnome.org%s", extensionMetadata.DownloadUrl)
+	request, _ := http.NewRequest("GET", downloadUrl, nil)
 
 	response, err := client.Do(request)
 
@@ -69,7 +66,7 @@ func DownloadExtension(extensionId string) {
 
 	defer response.Body.Close()
 
-	extensionZip, err := os.Create("")
+	extensionZip, err := os.Create(filepath.Join(fmt.Sprintf("%s/.local/share/gnome-shell/extensions", homeDir), filepath.Base(fileName)))
 
 	if err != nil {
 		fmt.Println(err)
