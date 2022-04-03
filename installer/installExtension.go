@@ -1,121 +1,65 @@
 package installer
 
 import (
-	"archive/zip"
 	"encoding/json"
 	"fmt"
-	"path/filepath"
 	"os"
 	"os/exec"
-	"io"
+	"path/filepath"
 	"strings"
 
 	"gitlab.com/yugarinn/gei/client"
 	"gitlab.com/yugarinn/gei/idos"
 )
 
-func InstallExtension(extensionId string) {
-	extensionMetadata := getExtensionMetadata(extensionId)
+func InstallExtension(extensionId string) error {
+	extensionMetadata, err := getExtensionMetadata(extensionId)
 
 	downloadExtension(extensionMetadata)
-	unzipExtension(extensionMetadata.Uuid)
+	UnzipExtension(extensionMetadata.Uuid)
+	enableExtension(extensionMetadata.Uuid)
 	deleteZip(extensionMetadata.Uuid)
+
+	return err
 }
 
-func getExtensionMetadata(extensionId string) idos.ExtensionMetadata {
-	systemShellVersion := getSystemShellMajorVersion()
-	extensionMetadataResponse := client.FetchExtensionMetadata(extensionId, systemShellVersion)
+func getExtensionMetadata(extensionId string) (idos.ExtensionMetadata, error) {
+	systemShellVersion, err := getSystemShellMajorVersion()
+	extensionMetadataResponse, err := client.FetchExtensionMetadata(extensionId, systemShellVersion)
 
 	var extensionMetadata idos.ExtensionMetadata
 	json.Unmarshal(extensionMetadataResponse, &extensionMetadata)
 
-	return extensionMetadata
+	return extensionMetadata, err
 }
 
-func getSystemShellMajorVersion() string {
+func getSystemShellMajorVersion() (string, error) {
 	rawShellCommandOutput, err := exec.Command("gnome-shell", "--version").Output()
-
-	if err != nil {
-		fmt.Println(err)
-	}
 
 	splittedCommandOutput := strings.Split(string(rawShellCommandOutput), " ")
 	gnomeShellVersion := splittedCommandOutput[len(splittedCommandOutput) - 1]
 	gnomeShellMajorVersion := strings.Split(gnomeShellVersion, ".")[0]
 
-	return gnomeShellMajorVersion
+	return gnomeShellMajorVersion, err
 }
 
 func downloadExtension(extensionMetadata idos.ExtensionMetadata) {
 	client.DownloadExtension(extensionMetadata)
 }
 
-func unzipExtension(uuid string) error {
-	homeDir, _ := os.UserHomeDir()
-	fileName := fmt.Sprintf("%s.zip", uuid)
-	dest := filepath.Join(fmt.Sprintf("%s/.local/share/gnome-shell/extensions", homeDir), filepath.Base(uuid))
+func enableExtension(extensionUuid string) {
+	err2 := exec.Command("gnome-extensions", "enable", extensionUuid).Run()
+	err3 := exec.Command("dbus-send", "--session", "--type=method_call", "--dest=org.gnome.Shell /org/gnome/Shell org.gnome.Shell.Eval string:\"global.reexec_self();\"").Run()
 
-    r, err := zip.OpenReader(filepath.Join(fmt.Sprintf("%s/.local/share/gnome-shell/extensions", homeDir), filepath.Base(fileName)))
+	if err2 != nil {
+		fmt.Println(err2)
+	}
 
-    if err != nil {
-        return err
-    }
-    defer func() {
-        if err := r.Close(); err != nil {
-            panic(err)
-        }
-    }()
-
-    os.MkdirAll(dest, 0755)
-
-    extractAndWriteFile := func(f *zip.File) error {
-        rc, err := f.Open()
-        if err != nil {
-            return err
-        }
-        defer func() {
-            if err := rc.Close(); err != nil {
-                panic(err)
-            }
-        }()
-
-        path := filepath.Join(dest, f.Name)
-
-        if !strings.HasPrefix(path, filepath.Clean(dest) + string(os.PathSeparator)) {
-            return fmt.Errorf("illegal file path: %s", path)
-        }
-
-        if f.FileInfo().IsDir() {
-            os.MkdirAll(path, f.Mode())
-        } else {
-            os.MkdirAll(filepath.Dir(path), f.Mode())
-            f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-            if err != nil {
-                return err
-            }
-            defer func() {
-                if err := f.Close(); err != nil {
-                    panic(err)
-                }
-            }()
-
-            _, err = io.Copy(f, rc)
-            if err != nil {
-                return err
-            }
-        }
-        return nil
-    }
-
-    for _, f := range r.File {
-        err := extractAndWriteFile(f)
-        if err != nil {
-            return err
-        }
-    }
-
-    return nil
+	if err3 != nil {
+		fmt.Println(err3)
+	}
 }
+
 
 func deleteZip(uuid string) {
 	homeDir, _ := os.UserHomeDir()

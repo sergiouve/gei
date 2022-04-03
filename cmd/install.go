@@ -25,7 +25,11 @@ func install(args []string) {
 		os.Exit(0)
 	}
 
-	installer.InstallExtension(args[0])
+	error := installer.InstallExtension(args[0])
 
-	fmt.Println("Extension successfully installed. Or was it?")
+	if error != nil {
+		fmt.Println("Error installing extension: ", error.Error())
+	} else {
+		fmt.Println("Extension successfully installed.")
+	}
 }

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -16,38 +17,51 @@ type QueryParameter struct {
 	value string
 }
 
-func fetch(method string, url string, params []QueryParameter) []byte {
+func fetch(method string, url string, params []QueryParameter) ([]byte, error) {
 	client := &http.Client{}
-	request, _ := http.NewRequest(method, url, nil)
+	req, err := http.NewRequest(method, url, nil)
 
-	if (len(params) > 0 && method == "GET") {
-		query := request.URL.Query()
+	if len(params) > 0 && method == "GET" {
+		query := req.URL.Query()
 
 		for _, param := range params {
 			query.Add(param.name, param.value)
 		}
 
-		request.URL.RawQuery = query.Encode()
+		req.URL.RawQuery = query.Encode()
 	}
 
-	response, _ := client.Do(request)
-	payload, _ := ioutil.ReadAll(response.Body)
+	resp, _ := client.Do(req)
 
-	return payload
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		err = errors.New(http.StatusText(resp.StatusCode))
+	}
+
+	if err != nil {
+		return nil, err
+	} else {
+		payload, _ := ioutil.ReadAll(resp.Body)
+
+		return payload, nil
+	}
 }
 
 func FetchSearch(extensionName string) []byte {
 	params := []QueryParameter{{name: "search", value: extensionName}}
-	searchResult := fetch("GET", "https://extensions.gnome.org/extension-query", params)
+	searchResult, _ := fetch("GET", "https://extensions.gnome.org/extension-query", params)
 
 	return searchResult
 }
 
-func FetchExtensionMetadata(extensionId string, systemShellVersion string) []byte {
+func FetchExtensionMetadata(extensionId string, systemShellVersion string) ([]byte, error) {
 	params := []QueryParameter{{name: "pk", value: extensionId}, {name: "shell_version", value: systemShellVersion}}
-	extensionMetadata := fetch("GET", "https://extensions.gnome.org/extension-info/", params)
+	extensionMetadata, err := fetch("GET", "https://extensions.gnome.org/extension-info/", params)
 
-	return extensionMetadata
+	if err != nil {
+		return nil, err
+	}
+
+	return extensionMetadata, nil
 }
 
 func DownloadExtension(extensionMetadata idos.ExtensionMetadata) {

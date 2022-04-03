@@ -2,6 +2,7 @@ package installer
 
 import (
 	"encoding/json"
+
 	"gitlab.com/yugarinn/gei/client"
 )
 
