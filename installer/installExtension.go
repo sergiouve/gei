@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gitlab.com/yugarinn/gei/client"
-	"gitlab.com/yugarinn/gei/idos"
+	"gitlab.com/yugarinn/gei/installer/client"
+	"gitlab.com/yugarinn/gei/installer/idos"
 )
 
 func InstallExtension(extensionId string) error {

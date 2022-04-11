@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"gitlab.com/yugarinn/gei/idos"
+	"gitlab.com/yugarinn/gei/installer/idos"
 )
 
 type QueryParameter struct {

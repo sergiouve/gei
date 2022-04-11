@@ -3,7 +3,7 @@ package installer
 import (
 	"encoding/json"
 
-	"gitlab.com/yugarinn/gei/client"
+	"gitlab.com/yugarinn/gei/installer/client"
 )
 
 type FetchSearchResult struct {
