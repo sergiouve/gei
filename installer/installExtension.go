@@ -10,6 +10,7 @@ import (
 
 	"gitlab.com/yugarinn/gei/installer/client"
 	"gitlab.com/yugarinn/gei/installer/idos"
+	"github.com/godbus/dbus/v5"
 )
 
 func InstallExtension(extensionId string) error {
@@ -48,13 +49,15 @@ func downloadExtension(extensionMetadata idos.ExtensionMetadata) {
 }
 
 func enableExtension(extensionUuid string) {
-	err := exec.Command("dbus-send", "--session", fmt.Sprintf("--dest=org.gnome.Shell /org/gnome/Shell org.gnome.Shell.Extensions.EnableExtension string:'%s'", extensionUuid)).Run()
-
+	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, "Failed to connect to session bus:", err)
+		os.Exit(1)
 	}
-}
+	defer conn.Close()
 
+	conn.Object("org.gnome.Shell", "/org/gnome/Shell").Call("org.gnome.Shell.Extensions.EnableExtension", 0, extensionUuid)
+}
 
 func deleteZip(uuid string) {
 	homeDir, _ := os.UserHomeDir()
