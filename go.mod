@@ -31,7 +31,7 @@ require (
 	golang.org/x/tools v0.1.11-0.20220329213715-7cf6cf0fb5fd // indirect
 	golang.org/x/tools/gopls v0.8.2 // indirect
 	golang.org/x/vuln v0.0.0-20220408094041-1b505d1b9022 // indirect
-	golang.org/x/xerrors v0.0.0-20220411182839-cd4e9df8ec86 // indirect
+	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
 	honnef.co/go/tools v0.3.0 // indirect
 	mvdan.cc/gofumpt v0.3.1 // indirect
 	mvdan.cc/xurls/v2 v2.4.0 // indirect

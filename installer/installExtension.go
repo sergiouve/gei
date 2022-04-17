@@ -48,15 +48,10 @@ func downloadExtension(extensionMetadata idos.ExtensionMetadata) {
 }
 
 func enableExtension(extensionUuid string) {
-	err2 := exec.Command("gnome-extensions", "enable", extensionUuid).Run()
-	err3 := exec.Command("dbus-send", "--session", "--type=method_call", "--dest=org.gnome.Shell /org/gnome/Shell org.gnome.Shell.Eval string:\"global.reexec_self();\"").Run()
+	err := exec.Command("dbus-send", "--session", fmt.Sprintf("--dest=org.gnome.Shell /org/gnome/Shell org.gnome.Shell.Extensions.EnableExtension string:'%s'", extensionUuid)).Run()
 
-	if err2 != nil {
-		fmt.Println(err2)
-	}
-
-	if err3 != nil {
-		fmt.Println(err3)
+	if err != nil {
+		fmt.Println(err)
 	}
 }
 
