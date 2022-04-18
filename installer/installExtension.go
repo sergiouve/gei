@@ -18,12 +18,13 @@ func InstallExtension(extensionId string) error {
 	UnzipExtension(extensionMetadata.Uuid)
 	enableExtension(extensionMetadata.Uuid)
 	deleteZip(extensionMetadata.Uuid)
+	restartShell()
 
 	return err
 }
 
 func getExtensionMetadata(extensionId string) (idos.ExtensionMetadata, error) {
-	systemShellVersion := getSystemShellMajorVersion()
+	systemShellVersion := getSystemShellVersion()
 	extensionMetadataResponse, err := client.FetchExtensionMetadata(extensionId, systemShellVersion)
 
 	var extensionMetadata idos.ExtensionMetadata
@@ -32,7 +33,7 @@ func getExtensionMetadata(extensionId string) (idos.ExtensionMetadata, error) {
 	return extensionMetadata, err
 }
 
-func getSystemShellMajorVersion() string {
+func getSystemShellVersion() string {
 	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Failed to connect to session bus:", err)
@@ -65,4 +66,8 @@ func deleteZip(uuid string) {
 	fileName := fmt.Sprintf("%s.zip", uuid)
 
 	os.Remove(filepath.Join(fmt.Sprintf("%s/.local/share/gnome-shell/extensions", homeDir), filepath.Base(fileName)))
+}
+
+func restartShell() {
+	fmt.Println("NOPE")
 }
