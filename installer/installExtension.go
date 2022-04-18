@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"gitlab.com/yugarinn/gei/installer/client"
 	"gitlab.com/yugarinn/gei/installer/idos"
@@ -25,7 +23,7 @@ func InstallExtension(extensionId string) error {
 }
 
 func getExtensionMetadata(extensionId string) (idos.ExtensionMetadata, error) {
-	systemShellVersion, err := getSystemShellMajorVersion()
+	systemShellVersion := getSystemShellMajorVersion()
 	extensionMetadataResponse, err := client.FetchExtensionMetadata(extensionId, systemShellVersion)
 
 	var extensionMetadata idos.ExtensionMetadata
@@ -34,14 +32,17 @@ func getExtensionMetadata(extensionId string) (idos.ExtensionMetadata, error) {
 	return extensionMetadata, err
 }
 
-func getSystemShellMajorVersion() (string, error) {
-	rawShellCommandOutput, err := exec.Command("gnome-shell", "--version").Output()
+func getSystemShellMajorVersion() string {
+	conn, err := dbus.ConnectSessionBus()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Failed to connect to session bus:", err)
+		os.Exit(1)
+	}
+	defer conn.Close()
 
-	splittedCommandOutput := strings.Split(string(rawShellCommandOutput), " ")
-	gnomeShellVersion := splittedCommandOutput[len(splittedCommandOutput) - 1]
-	gnomeShellMajorVersion := strings.Split(gnomeShellVersion, ".")[0]
+	shellVersion, err := conn.Object("org.gnome.Shell", "/org/gnome/Shell").GetProperty("org.gnome.Shell.ShellVersion")
 
-	return gnomeShellMajorVersion, err
+	return shellVersion.Value().(string)
 }
 
 func downloadExtension(extensionMetadata idos.ExtensionMetadata) {
