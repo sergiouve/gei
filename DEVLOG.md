@@ -12,6 +12,31 @@
 - [x] Implement a dbus channel communication with the shell
 - [ ] Allow installation command to use uuid instead of id
 - [ ] Abstract all `dbus` calls to a `dbus-client`
+- [ ] Implement `remove` command
+- [ ] Tests
+- [ ] Enabling/disabling non installed extensions should throw an error
+
+---
+
+**_2022-06-25_**
+
+So this project finally died due to the complexity of communicating with the gnome shell via `dbus` to manage extensions. The GNOME team does not really encourage this kind of approach when interacting with the system.
+
+https://discourse.gnome.org/t/proper-way-to-restart-the-shell-from-a-script/9797/4
+
+---
+
+**_2022-05-06_**
+
+The way forward is to find out how the Gnome Extensions app enables and disables extensions, and replicating it.
+
+Implemented enable/disable extension command which ends up really just being a wrapper over the `dbus` call. Still, nice to eat some low hanging fruit. I should always work with uuids, `gnome-extensions` id are a bit foreign and not consistent over other services.
+
+---
+
+**_2022-05-01_**
+
+I'm just trying to figure out where I left off... Aaaaand I ended up lost in the Gnome Shell source code trying to figure out how to enable extensions.
 
 ---
 
@@ -153,7 +178,7 @@ I ended up refactoring all the client and installer side and getting the client 
 
 **_2022-02-23_**
 
-Pretty productive day in terms of awereness gaining I guess. I have the overview of the download process layed out with the Gnome "API". It also felt a bit nicer to read and write code in Go. Not all that much progress code wise though, but I'm getting there, I will have a lot to refactor and FPrize during this learnign process.
+Pretty productive day in terms of awereness gaining I guess. I have the overview of the download process layed out with the Gnome "API". It also felt a bit nicer to read and write code in Go. Not all that much progress code wise though, but I'm getting there, I will have a lot to refactor and FPrize during this learning process.
 
 ---
 

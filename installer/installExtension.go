@@ -18,7 +18,6 @@ func InstallExtension(extensionId string) error {
 	UnzipExtension(extensionMetadata.Uuid)
 	enableExtension(extensionMetadata.Uuid)
 	deleteZip(extensionMetadata.Uuid)
-	restartShell()
 
 	return err
 }
@@ -66,8 +65,4 @@ func deleteZip(uuid string) {
 	fileName := fmt.Sprintf("%s.zip", uuid)
 
 	os.Remove(filepath.Join(fmt.Sprintf("%s/.local/share/gnome-shell/extensions", homeDir), filepath.Base(fileName)))
-}
-
-func restartShell() {
-	fmt.Println("NOPE")
 }

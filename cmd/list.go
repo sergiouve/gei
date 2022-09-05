@@ -23,6 +23,6 @@ func list(args []string) {
 	listResult := installer.ListInstalledExtensions()
 
 	for _, result := range listResult {
-		fmt.Println(fmt.Sprintf("id: %s, name: %s, url: %s", "0", result.Uuid, result.DownloadUrl))
+		fmt.Println(fmt.Sprintf("uuid: %s, url: %s", result.Uuid, result.DownloadUrl))
 	}
 }
